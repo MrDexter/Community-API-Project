@@ -1,0 +1,21 @@
+@Community_API_Project_HostAddress = http://localhost:5197
+
+GET {{Community_API_Project_HostAddress}}/players
+Accept: application/json
+
+###
+
+POST {{Community_API_Project_HostAddress}}/player?id=7&rank=coplevel&newrank=8
+Content-Type: application/json
+# X-API-Key: PASSWORD123
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJEZWNsYW4iLCJzY29wZSI6InJhbmsud3JpdGUiLCJpc3MiOiJDb21tdW5pdHlBcGkiLCJhdWQiOiJDb21tdW5pdHlBcGlDbGllbnRzIiwiZXhwIjoxODkzNDU2MDAwfQ.M9UbLWoZs_5i4yrmXv6uzNIcNA9I3KpRz48NRe--CRs
+
+# {
+#   "author": "user",
+#   "content": "Hello from Declan, How do you do?"
+# }
+
+###
+POST {{Community_API_Project_HostAddress}}/Auth/Token
+X-Auth-Secret: 
+Content-Type: application/json

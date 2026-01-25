@@ -1,0 +1,42 @@
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.csproj.AssemblyReference.cache
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\rpswa.dswa.cache.json
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.GeneratedMSBuildEditorConfig.editorconfig
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.AssemblyInfoInputs.cache
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.AssemblyInfo.cs
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.csproj.CoreCompileInputs.cache
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.MvcApplicationPartsAssemblyInfo.cs
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.MvcApplicationPartsAssemblyInfo.cache
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\appsettings.Development.json
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\appsettings.json
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Community API Project.staticwebassets.endpoints.json
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Community API Project.exe
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Community API Project.deps.json
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Community API Project.runtimeconfig.json
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Community API Project.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Community API Project.pdb
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.OpenApi.dll
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\rjimswa.dswa.cache.json
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\scopedcss\bundle\Community API Project.styles.css
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\staticwebassets.build.json
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\staticwebassets.build.json.cache
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\staticwebassets.development.json
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\swae.build.ex.cache
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Communit.73E9206C.Up2Date
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.dll
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\refint\Community API Project.dll
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.pdb
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.genruntimeconfig.cache
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\ref\Community API Project.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\MySqlConnector.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
