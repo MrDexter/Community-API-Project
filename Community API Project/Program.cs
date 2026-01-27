@@ -65,17 +65,84 @@ app.MapGet("/players", async () =>
     return Results.Ok(result);
 });
 
-app.MapGet("/players/{id}", async (int id) =>
+app.MapGet("/players/{id}", async (int id) => // Add Player Stats
 {
     var result = new List<Dictionary<string, object>>();
+    var row = new Dictionary<string, object>();
     using (var connection = new MySqlConnection(connectionString))
     {
       await connection.OpenAsync();
-
       var sql = "Select * FROM players where uid = @uid"; // Setup to use UID or Steam ID
-        // Add Houses, Player Stats
       using var command = new MySqlCommand(sql, connection);
       command.Parameters.AddWithValue("@uid", id);
+      using var reader = await command.ExecuteReaderAsync();
+      if (!await reader.ReadAsync())
+        {
+            return Results.NotFound();
+        };
+        for (int i=0; i < reader.FieldCount; i++)
+        {
+            row[reader.GetName(i)] = reader.GetValue(i);
+        };
+        result.Add(row);
+    };
+    // Housing
+    using (var connnection2 = new MySqlConnection(connectionString))
+    {
+      await connnection2.OpenAsync();
+      var sql2 = "SELECT a.id, a.location, a.securityLevel, b.VirtualContents FROM housing a INNER JOIN housinginvstorage b ON (a.HousingInvStorageID=b.id) WHERE a.alive = 1 AND a.ownerPid=@pid AND a.isOrgHouse=0";
+      using var command2 = new MySqlCommand(sql2, connnection2);
+      command2.Parameters.AddWithValue("@pid", result[0]["playerid"]);
+      using var reader2 = await command2.ExecuteReaderAsync();
+      var housing = new Dictionary<string, object>();
+      var count = 0;
+        while (await reader2.ReadAsync())
+        {
+          var row2 = new Dictionary<string, object>();
+          for (int i = 0; i < reader2.FieldCount; i++)
+            {
+              row2[reader2.GetName(i)] = reader2.GetValue(i);  
+            };
+            count = count + 1;
+            housing["House " + count ] = row2;
+        };
+        row["housing"] = housing;
+    };
+    // Vehicles
+    using (var connection3 = new MySqlConnection(connectionString))
+    {
+        await connection3.OpenAsync();
+        var sql3 = "Select * FROM vehicles where pid = @pid";
+        using var command3 = new MySqlCommand(sql3, connection3);
+        command3.Parameters.AddWithValue("@pid", result[0]["playerid"]);
+        using var reader3 = await command3.ExecuteReaderAsync();
+        var vehicles = new Dictionary<string, object>();
+        var count = 0;
+        while (await reader3.ReadAsync())
+        {
+            var row3 = new Dictionary<string, object>();
+            for (int i = 0; i < reader3.FieldCount; i++)
+            {
+              row3[reader3.GetName(i)] = reader3.GetValue(i);  
+            };
+            count = count + 1;
+            vehicles["Vehicle " + count ] = row3;
+        };
+        row["vehicles"] = vehicles;
+    };
+    return Results.Ok(result);
+});
+
+app.MapGet("/gangs", async () =>
+{
+ var result = new List<Dictionary<string, object>>();
+ using (var connection = new MySqlConnection(connectionString))
+    {
+      await connection.OpenAsync();
+
+      var sql = "Select * FROM organisations";
+
+      using var command = new MySqlCommand(sql, connection);
 
       using var reader = await command.ExecuteReaderAsync();
 
@@ -83,19 +150,13 @@ app.MapGet("/players/{id}", async (int id) =>
 
       while (await reader.ReadAsync())
         {
-            for (int i=0; i < reader.FieldCount; i++)
+            for (int i = 0; i < reader.FieldCount; i++)
             {
                 row[reader.GetName(i)] = reader.GetValue(i);
             };
         };
         result.Add(row);
     };
-    return Results.Ok(result);
-});
-
-app.MapGet("/gangs", async () =>
-{
-    
 });
 
 app.MapGet("/gangs/{id}", async () =>
@@ -104,7 +165,7 @@ app.MapGet("/gangs/{id}", async () =>
     // Pull players where 
 });
 
-app.MapPost("/player", [Authorize] async (HttpContext ctx, int id, string rank, string newRank) => // newRank is Enum is DB, Send as String
+app.MapPost("/players/{id}/updaterank/{rank}", [Authorize] async (HttpContext ctx, int id, string rank, string newRank) => // newRank is Enum in DB, Send as String
 {
     if (!ctx.User.HasClaim("scope", "rank.write"))
     {

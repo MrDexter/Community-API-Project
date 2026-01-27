@@ -40,3 +40,4 @@ T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microso
 T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
 T:\C# Apps\Community API Project\Community API Project\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+T:\C# Apps\Community API Project\Community API Project\obj\Debug\net10.0\Community API Project.sourcelink.json

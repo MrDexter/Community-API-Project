@@ -5,6 +5,11 @@ Accept: application/json
 
 ###
 
+GET {{Community_API_Project_HostAddress}}/players/7
+Accept: application/json
+
+###
+
 POST {{Community_API_Project_HostAddress}}/player?id=7&rank=coplevel&newrank=8
 Content-Type: application/json
 # X-API-Key: PASSWORD123
