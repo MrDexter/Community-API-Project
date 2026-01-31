@@ -197,8 +197,22 @@ app.MapPost("/players/{id}/updaterank", [Authorize] async (HttpContext ctx, int 
         await connection.OpenAsync();
 
         // Add a Switch or Contains for more security (only edit wanted rows)
+        string column = rank switch
+        {
+            // Police
+            "coplevel" or "tfuLevel" or "ncaLevel" or "npaslevel" or "mpuLevel" or "acadLevel" => rank,
 
-        var sql = $"Update players SET {rank} = @newRank where uid = @uid";
+            // Opfor
+            "ionlevel" or "deltalevel" or "UmLevel" or "iaflevel" or "irulevel" => rank,
+
+            // Medics
+            "mediclevel" or "hemslevel" or "hartlevel" => rank,
+
+            //Error
+            _ => throw new Exception("Invalid Rank Colomn")
+        };
+
+        var sql = $"Update players SET {column} = @newRank where uid = @uid";
 
         using var command = new MySqlCommand(sql, connection);
         command.Parameters.AddWithValue("@uid", id);
@@ -218,6 +232,16 @@ app.MapPost("/players/{id}/updaterank", [Authorize] async (HttpContext ctx, int 
 // Chat GPT for JWT Keys, Learn about Secrets for authorization
 app.MapPost("/auth/token", () =>
 {
+    // Having a secret to allow access to generating a key, Like an Rcon pass?
+
+//     var expectedSecret = config["Auth:ClientSecret"];
+//     if (!ctx.Request.Headers.TryGetValue("X-Auth-Secret", out var provided) ||
+//         !string.Equals(provided, expectedSecret, StringComparison.Ordinal))
+//     {
+//         return Results.Unauthorized();
+//     }
+
+// Add dynamic auth token generating, add variables to generate specific like Police or NHS key for updating whitelisting
     var claims = new[]
     {
         new Claim(ClaimTypes.Name, "admin"),
@@ -240,38 +264,6 @@ app.MapPost("/auth/token", () =>
         token = new JwtSecurityTokenHandler().WriteToken(token)
     });
 });
-// app.MapPost("/auth/token", (HttpContext ctx, IConfiguration config) =>
-// {
-//     var expectedSecret = config["Auth:ClientSecret"];
-//     if (!ctx.Request.Headers.TryGetValue("X-Auth-Secret", out var provided) ||
-//         !string.Equals(provided, expectedSecret, StringComparison.Ordinal))
-//     {
-//         return Results.Unauthorized();
-//     }
-
-//     var claims = new[]
-//     {
-//         new Claim(ClaimTypes.Name, "admin"),
-//         new Claim("scope", "rank.write")
-//     };
-
-//     var key = new SymmetricSecurityKey(
-//         Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
-//     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-//     var token = new JwtSecurityToken(
-//         issuer: config["Jwt:Issuer"],
-//         audience: config["Jwt:Audience"],
-//         claims: claims,
-//         expires: DateTime.UtcNow.AddHours(1),
-//         signingCredentials: creds);
-
-//     return Results.Ok(new
-//     {
-//         token = new JwtSecurityTokenHandler().WriteToken(token)
-//     });
-// });
-
 
 
 app.Run();
