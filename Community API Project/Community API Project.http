@@ -5,12 +5,17 @@ Accept: application/json
 
 ###
 
-GET {{Community_API_Project_HostAddress}}/players/7
+GET {{Community_API_Project_HostAddress}}/players/76561198213433993
 Accept: application/json
 
 ###
 
-POST {{Community_API_Project_HostAddress}}/player?id=7&rank=coplevel&newrank=8
+GET {{Community_API_Project_HostAddress}}/gangs
+Accept: application/json
+
+###
+
+POST {{Community_API_Project_HostAddress}}/players/7/updaterank?rank=coplevel&newrank=6
 Content-Type: application/json
 # X-API-Key: PASSWORD123
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJEZWNsYW4iLCJzY29wZSI6InJhbmsud3JpdGUiLCJpc3MiOiJDb21tdW5pdHlBcGkiLCJhdWQiOiJDb21tdW5pdHlBcGlDbGllbnRzIiwiZXhwIjoxODkzNDU2MDAwfQ.M9UbLWoZs_5i4yrmXv6uzNIcNA9I3KpRz48NRe--CRs

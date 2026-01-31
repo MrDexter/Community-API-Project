@@ -65,14 +65,14 @@ app.MapGet("/players", async () =>
     return Results.Ok(result);
 });
 
-app.MapGet("/players/{id}", async (int id) => // Add Player Stats
+app.MapGet("/players/{id}", async (string id) => // Add Player Stats
 {
     var result = new List<Dictionary<string, object>>();
     var row = new Dictionary<string, object>();
     using (var connection = new MySqlConnection(connectionString))
     {
       await connection.OpenAsync();
-      var sql = "Select * FROM players where uid = @uid"; // Setup to use UID or Steam ID
+      var sql = "Select * FROM players WHERE uid = @uid OR playerid = @uid";
       using var command = new MySqlCommand(sql, connection);
       command.Parameters.AddWithValue("@uid", id);
       using var reader = await command.ExecuteReaderAsync();
@@ -98,11 +98,12 @@ app.MapGet("/players/{id}", async (int id) => // Add Player Stats
       var count = 0;
         while (await reader2.ReadAsync())
         {
-          var row2 = new Dictionary<string, object>();
-          for (int i = 0; i < reader2.FieldCount; i++)
-            {
-              row2[reader2.GetName(i)] = reader2.GetValue(i);  
-            };
+            var row2 = new Houses(
+                reader2["id"].ToString() ?? string.Empty,
+                reader2["location"].ToString() ?? string.Empty,
+                reader2["securityLevel"].ToString() ?? string.Empty,
+                reader2["virtualContents"].ToString() ?? string.Empty
+            );
             count = count + 1;
             housing["House " + count ] = row2;
         };
@@ -112,7 +113,7 @@ app.MapGet("/players/{id}", async (int id) => // Add Player Stats
     using (var connection3 = new MySqlConnection(connectionString))
     {
         await connection3.OpenAsync();
-        var sql3 = "Select * FROM vehicles where pid = @pid";
+        var sql3 = "Select id, side, classname, type, inventory, reg, capacity, security, acceleration, insert_time FROM vehicles where pid = @pid";
         using var command3 = new MySqlCommand(sql3, connection3);
         command3.Parameters.AddWithValue("@pid", result[0]["playerid"]);
         using var reader3 = await command3.ExecuteReaderAsync();
@@ -120,11 +121,18 @@ app.MapGet("/players/{id}", async (int id) => // Add Player Stats
         var count = 0;
         while (await reader3.ReadAsync())
         {
-            var row3 = new Dictionary<string, object>();
-            for (int i = 0; i < reader3.FieldCount; i++)
-            {
-              row3[reader3.GetName(i)] = reader3.GetValue(i);  
-            };
+            var row3 = new Vehicles(
+                reader3["id"].ToString() ?? string.Empty,
+                reader3["side"].ToString() ?? string.Empty,
+                reader3["classname"].ToString() ?? string.Empty,
+                reader3["type"].ToString() ?? string.Empty,
+                reader3["inventory"].ToString() ?? string.Empty,
+                reader3["reg"].ToString() ?? string.Empty,
+                reader3["capacity"].ToString() ?? string.Empty,
+                reader3["security"].ToString() ?? string.Empty,
+                reader3["acceleration"].ToString() ?? string.Empty,
+                reader3.GetDateTime(reader3.GetOrdinal("insert_time"))
+            );
             count = count + 1;
             vehicles["Vehicle " + count ] = row3;
         };
@@ -135,28 +143,32 @@ app.MapGet("/players/{id}", async (int id) => // Add Player Stats
 
 app.MapGet("/gangs", async () =>
 {
- var result = new List<Dictionary<string, object>>();
+var result = new List<Gangs>();
  using (var connection = new MySqlConnection(connectionString))
     {
       await connection.OpenAsync();
 
-      var sql = "Select * FROM organisations";
+      var sql = "Select * FROM organisations WHERE alive = 1";
 
       using var command = new MySqlCommand(sql, connection);
 
       using var reader = await command.ExecuteReaderAsync();
 
-      var row = new Dictionary<string, object>();
 
       while (await reader.ReadAsync())
-        {
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                row[reader.GetName(i)] = reader.GetValue(i);
-            };
-        };
-        result.Add(row);
+        {        
+            var row = new Gangs(
+                reader["id"].ToString() ?? string.Empty,
+                reader["name"].ToString() ?? string.Empty,
+                reader["members"].ToString() ?? string.Empty,
+                reader["leader"].ToString() ?? string.Empty,
+                reader["tag"].ToString() ?? string.Empty,
+                reader["bank"].ToString() ?? string.Empty
+            );
+            result.Add(row);
+        };//
     };
+    return Results.Ok(result);
 });
 
 app.MapGet("/gangs/{id}", async () =>
@@ -165,7 +177,7 @@ app.MapGet("/gangs/{id}", async () =>
     // Pull players where 
 });
 
-app.MapPost("/players/{id}/updaterank/{rank}", [Authorize] async (HttpContext ctx, int id, string rank, string newRank) => // newRank is Enum in DB, Send as String
+app.MapPost("/players/{id}/updaterank", [Authorize] async (HttpContext ctx, int id, string rank, string newRank) => // newRank is Enum in DB, Send as String
 {
     if (!ctx.User.HasClaim("scope", "rank.write"))
     {
@@ -175,9 +187,9 @@ app.MapPost("/players/{id}/updaterank/{rank}", [Authorize] async (HttpContext ct
     {
         await connection.OpenAsync();
 
-        string column = rank; // Change to Switch for more security (only edit wanted rows)
+        // Add a Switch or Contains for more security (only edit wanted rows)
 
-        var sql = $"Update players SET {column} = @newRank where uid = @uid";
+        var sql = $"Update players SET {rank} = @newRank where uid = @uid";
 
         using var command = new MySqlCommand(sql, connection);
         command.Parameters.AddWithValue("@uid", id);
@@ -255,3 +267,36 @@ app.MapPost("/auth/token", () =>
 
 app.Run();
 
+// Limit returned colomns
+record Players (
+
+);
+
+record Vehicles (
+    string Id,
+    string Side,
+    string Class,
+    string Type,
+    string Inventory,
+    string Reg,
+    string Capacity,
+    string Security,
+    string Acceleration,
+    DateTime InsertTime
+);
+
+record Houses (
+    string Id,
+    string Location,
+    string SecurityLevel,
+    string VirtualContents
+);
+
+record Gangs (
+    string Id,
+    string Name,
+    string Members,
+    string Leader,
+    string Tag,
+    string Bank
+);
