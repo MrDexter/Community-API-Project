@@ -42,23 +42,32 @@ app.UseAuthorization();
 
 app.MapGet("/players", async () =>
 {
-   var result = new List<Dictionary<string, object>>();
+   var result = new List<Player>();
    using (var connection = new MySqlConnection(connectionString))
     {
         await connection.OpenAsync();
 
-        var sql = "Select * From players";
+        var sql = "Select uid, name, playerid, cash, bankacc, cartelCredits, adminLevel, copLevel, ionLevel, medicLevel, last_seen, insert_time From players";
 
         using var command = new MySqlCommand(sql, connection);
         using var reader = await command.ExecuteReaderAsync();
 
         while (await reader.ReadAsync())
         {
-            var row = new Dictionary<string, object>();
-            for (int i=0; i < reader.FieldCount; i++)
-            {
-                row[reader.GetName(i)] = reader.GetValue(i);
-            };
+            var row = new Player(
+                reader["uid"].ToString() ?? string.Empty,
+                reader["name"].ToString() ?? string.Empty,
+                reader["playerid"].ToString() ?? string.Empty,
+                reader["cash"].ToString() ?? string.Empty,
+                reader["bankacc"].ToString() ?? string.Empty,
+                reader["cartelCredits"].ToString() ?? string.Empty,
+                reader["adminLevel"].ToString() ?? string.Empty,
+                reader["copLevel"].ToString() ?? string.Empty,
+                reader["ionLevel"].ToString() ?? string.Empty,
+                reader["medicLevel"].ToString() ?? string.Empty,
+                reader.GetDateTime(reader.GetOrdinal("last_seen")),
+                reader.GetDateTime(reader.GetOrdinal("insert_time"))
+            );
             result.Add(row);
         };
     };
@@ -90,7 +99,7 @@ app.MapGet("/players/{id}", async (string id) => // Add Player Stats
     using (var connnection2 = new MySqlConnection(connectionString))
     {
       await connnection2.OpenAsync();
-      var sql2 = "SELECT a.id, a.location, a.securityLevel, b.VirtualContents FROM housing a INNER JOIN housinginvstorage b ON (a.HousingInvStorageID=b.id) WHERE a.alive = 1 AND a.ownerPid=@pid AND a.isOrgHouse=0";
+      var sql2 = "SELECT a.id, a.location, a.securityLevel, b.VirtualContents, a.timeBought FROM housing a INNER JOIN housinginvstorage b ON (a.HousingInvStorageID=b.id) WHERE a.alive = 1 AND a.ownerPid=@pid AND a.isOrgHouse=0";
       using var command2 = new MySqlCommand(sql2, connnection2);
       command2.Parameters.AddWithValue("@pid", result[0]["playerid"]);
       using var reader2 = await command2.ExecuteReaderAsync();
@@ -102,7 +111,8 @@ app.MapGet("/players/{id}", async (string id) => // Add Player Stats
                 reader2["id"].ToString() ?? string.Empty,
                 reader2["location"].ToString() ?? string.Empty,
                 reader2["securityLevel"].ToString() ?? string.Empty,
-                reader2["virtualContents"].ToString() ?? string.Empty
+                reader2["virtualContents"].ToString() ?? string.Empty,
+                reader2.GetDateTime(reader2.GetOrdinal("timeBought"))
             );
             count = count + 1;
             housing["House " + count ] = row2;
@@ -153,7 +163,6 @@ var result = new List<Gangs>();
       using var command = new MySqlCommand(sql, connection);
 
       using var reader = await command.ExecuteReaderAsync();
-
 
       while (await reader.ReadAsync())
         {        
@@ -268,8 +277,19 @@ app.MapPost("/auth/token", () =>
 app.Run();
 
 // Limit returned colomns
-record Players (
-
+record Player (
+    string Id,
+    string Name,
+    string PlayerId,
+    string Cash,
+    string Bankacc,
+    string CartelCredits,
+    string AdminLevel,
+    string CopLevel,
+    string IonLevel,
+    string MedicLevel,
+    DateTime LastSeen,
+    DateTime InsertTime
 );
 
 record Vehicles (
@@ -289,7 +309,8 @@ record Houses (
     string Id,
     string Location,
     string SecurityLevel,
-    string VirtualContents
+    string VirtualContents,
+    DateTime TimeBought
 );
 
 record Gangs (
