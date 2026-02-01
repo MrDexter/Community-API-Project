@@ -18,14 +18,10 @@ Accept: application/json
 POST {{Community_API_Project_HostAddress}}/players/7/updaterank?rank=coplevel&newrank=6
 Content-Type: application/json
 # X-API-Key: PASSWORD123
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJEZWNsYW4iLCJzY29wZSI6InJhbmsud3JpdGUiLCJpc3MiOiJDb21tdW5pdHlBcGkiLCJhdWQiOiJDb21tdW5pdHlBcGlDbGllbnRzIiwiZXhwIjoxODkzNDU2MDAwfQ.M9UbLWoZs_5i4yrmXv6uzNIcNA9I3KpRz48NRe--CRs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYXBpLWNsaWVudCIsInNpZGUiOiJwb2xpY2UiLCJzY29wZSI6IndyaXRlIiwiZXhwIjoxNzY5OTY3OTE0LCJpc3MiOiJDb21tdW5pdHlBcGkiLCJhdWQiOiJDb21tdW5pdHlBcGlDbGllbnRzIn0.J-wCgHK9NZsXGVfSkeAYbCoWNYrUp6oc_8b4IERGVyo
 
-# {
-#   "author": "user",
-#   "content": "Hello from Declan, How do you do?"
-# }
 
 ###
-POST {{Community_API_Project_HostAddress}}/Auth/Token
-X-Auth-Secret: 
+POST {{Community_API_Project_HostAddress}}/Auth/Token?name=api-client&group=police&perms=write
+X-Auth-Secret: RCONPASS1234
 Content-Type: application/json

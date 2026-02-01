@@ -175,7 +175,7 @@ var result = new List<Gangs>();
                 reader["bank"].ToString() ?? string.Empty
             );
             result.Add(row);
-        };//
+        };
     };
     return Results.Ok(result);
 });
@@ -188,64 +188,96 @@ app.MapGet("/gangs/{id}", async () =>
 
 app.MapPost("/players/{id}/updaterank", [Authorize] async (HttpContext ctx, int id, string rank, string newRank) => // newRank is Enum in DB, Send as String
 {
-    if (!ctx.User.HasClaim("scope", "rank.write"))
+    if (!ctx.User.HasClaim("scope", "write"))
     {
         return Results.Forbid();
     };
-    using (var connection = new MySqlConnection(connectionString))
+    var group = ctx.User.FindFirst("side")?.Value;
+    string column = group switch
     {
-        await connection.OpenAsync();
-
-        // Add a Switch or Contains for more security (only edit wanted rows)
-        string column = rank switch
+        "police" => rank switch
         {
-            // Police
             "coplevel" or "tfuLevel" or "ncaLevel" or "npaslevel" or "mpuLevel" or "acadLevel" => rank,
-
-            // Opfor
+            _ => throw new Exception("Invalid Rank Or Permissions")
+        },
+        "opfor" => rank switch
+        {
             "ionlevel" or "deltalevel" or "UmLevel" or "iaflevel" or "irulevel" => rank,
-
-            // Medics
+            _ => throw new Exception("Invalid Rank Or Permissions")
+        },
+        "medic" => rank switch 
+        {
             "mediclevel" or "hemslevel" or "hartlevel" => rank,
-
-            //Error
-            _ => throw new Exception("Invalid Rank Colomn")
+            _ => throw new Exception("Invalid Rank Or Permissions")
+        },
+        "staff" => rank switch
+        {
+            "adminlevel" or "donorlevel" or "donorexpiry" => rank,
+            _ => throw new Exception("Invalid Rank Or Permissions")  
+        },
+        //Error
+         _ => throw new Exception("Invalid Permissions")
+    };
+    using var connection = new MySqlConnection(connectionString);
+    await connection.OpenAsync();
+    UpdateRankGet? oldData = null;
+    var sqlGet = $"Select name, {rank} FROM players WHERE uid = @id";
+    using (var getCommand = new MySqlCommand(sqlGet, connection))
+    {
+        getCommand.Parameters.AddWithValue("@rank", rank);
+        getCommand.Parameters.AddWithValue("@id", id);
+        using var reader = await getCommand.ExecuteReaderAsync();
+        if (!await reader.ReadAsync())
+        {
+            return Results.NotFound();
         };
+          
+        oldData = new UpdateRankGet(
+            reader["name"].ToString() ?? string.Empty,
+            reader[rank].ToString() ?? string.Empty
+        );
+    };
 
-        var sql = $"Update players SET {column} = @newRank where uid = @uid";
+    var sql = $"Update players SET {column} = @newRank where uid = @uid";
 
-        using var command = new MySqlCommand(sql, connection);
+    using (var command = new MySqlCommand(sql, connection))
+    {    
         command.Parameters.AddWithValue("@uid", id);
         command.Parameters.AddWithValue("@newRank", newRank);
         int reader = await command.ExecuteNonQueryAsync();
-        if (reader > 0)
-        {
-            return Results.Ok("Success");
-        } 
-        else
-        {
-            return Results.Problem("Change Failed!");
-        }
+        var oldRank = oldData.OldValue;
+        var name = oldData.Name;
+        var result = new UpdateRank (
+            id.ToString() ?? string.Empty,
+            name.ToString() ?? string.Empty,
+            rank.ToString() ?? string.Empty,
+            oldRank.ToString() ?? string.Empty,
+            newRank.ToString() ?? string.Empty,
+            reader > 0 ? "Success" : "Failed"
+        );
+        return Results.Ok(result);
     };
 });
 
 // Chat GPT for JWT Keys, Learn about Secrets for authorization
-app.MapPost("/auth/token", () =>
+app.MapPost("/auth/token", (HttpContext ctx, IConfiguration config) =>
 {
-    // Having a secret to allow access to generating a key, Like an Rcon pass?
+    var expectedSecret = config["AuthTokens:ClientSecret"]; 
+    if (!ctx.Request.Headers.TryGetValue("X-Auth-Secret", out var provided) ||
+        !string.Equals(provided, expectedSecret, StringComparison.Ordinal))
+    {
+        return Results.Ok(provided);
+    };
 
-//     var expectedSecret = config["Auth:ClientSecret"];
-//     if (!ctx.Request.Headers.TryGetValue("X-Auth-Secret", out var provided) ||
-//         !string.Equals(provided, expectedSecret, StringComparison.Ordinal))
-//     {
-//         return Results.Unauthorized();
-//     }
+    var name  = ctx.Request.Query["name"].ToString();
+    var group = ctx.Request.Query["group"].ToString();
+    var perm = ctx.Request.Query["perms"].ToString();
 
-// Add dynamic auth token generating, add variables to generate specific like Police or NHS key for updating whitelisting
     var claims = new[]
     {
-        new Claim(ClaimTypes.Name, "admin"),
-        new Claim("scope", "rank.write")
+        new Claim(ClaimTypes.Name, name),
+        new Claim("side", group),
+        new Claim("scope", perm)
     };
 
     var key = new SymmetricSecurityKey(
@@ -268,7 +300,6 @@ app.MapPost("/auth/token", () =>
 
 app.Run();
 
-// Limit returned colomns
 record Player (
     string Id,
     string Name,
@@ -312,4 +343,18 @@ record Gangs (
     string Leader,
     string Tag,
     string Bank
+);
+
+record UpdateRankGet (
+    string Name,
+    string OldValue
+);
+
+record UpdateRank (
+    string Id,
+    string Name,
+    string RankName,
+    string OldValue,
+    string NewValue,
+    string Outcome
 );
