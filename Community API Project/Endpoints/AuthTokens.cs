@@ -32,7 +32,8 @@ public static class AuthEndpoints
             };
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+                Encoding.UTF8.GetBytes(config["Jwt:Key"])
+                ?? throw new InvalidOperationException("Missing Default Key"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
@@ -47,7 +48,7 @@ public static class AuthEndpoints
                 token = new JwtSecurityTokenHandler().WriteToken(token)
             });
         });
-        
+
         return app;
     }  
 }

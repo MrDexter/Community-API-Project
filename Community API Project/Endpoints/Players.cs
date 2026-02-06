@@ -11,9 +11,9 @@ public static class PlayerEndpoints
     {
         var group = app.MapGroup("/players");
 
-        group.MapGet("/", async (IPlayerService players) =>
+        group.MapGet("/", async (int? limit, int? offset, IPlayerService players) =>
         {
-            var result = await players.GetAllPlayers();
+            var result = await players.GetAllPlayers(limit, offset);
             return Results.Ok(result);
         });
 

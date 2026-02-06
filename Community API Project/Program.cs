@@ -28,7 +28,8 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
       ValidAudience = builder.Configuration["Jwt:Audience"],
 
       IssuerSigningKey = new SymmetricSecurityKey(
-        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]
+        ?? throw new InvalidOperationException("Missing Default Key"))
       )
     };
 });

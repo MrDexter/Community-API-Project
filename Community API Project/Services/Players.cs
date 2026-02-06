@@ -5,7 +5,7 @@ namespace CommunityApi.Services;
 
 public interface IPlayerService
 {
-    Task<List<Player>> GetAllPlayers();
+    Task<List<Player>> GetAllPlayers(int? limit, int? offset);
     Task<List<Dictionary<string, object>>> GetPlayer(string id);
     Task<UpdateRank> UpdateRank(int id, string rank, string newRank);
 }
@@ -20,7 +20,7 @@ public class PlayerService : IPlayerService
         ?? throw new InvalidOperationException("Missing Default Connection");
     }
 
-    public async Task<List<Player>> GetAllPlayers()
+    public async Task<List<Player>> GetAllPlayers(int? limit, int? offset)
     {
         var result = new List<Player>();
         using (var connection = new MySqlConnection(connectionString))
@@ -28,8 +28,17 @@ public class PlayerService : IPlayerService
             await connection.OpenAsync();
 
             var sql = "Select uid, name, playerid, cash, bankacc, cartelCredits, adminLevel, copLevel, ionLevel, medicLevel, last_seen, insert_time From players";
-
+            if (limit.HasValue)
+            {
+                sql += " LIMIT @limit";
+                if (offset.HasValue)
+                {
+                    sql += " OFFSET @offset";  
+                };
+            };
             using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@limit", limit);
+            command.Parameters.AddWithValue("@offset", offset);
             using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())

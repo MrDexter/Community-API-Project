@@ -5,7 +5,7 @@ namespace CommunityApi.Services;
 
 public interface IGangService
 {
-    Task<List<Gangs>>GetAllGangs();   
+    Task<List<Gangs>>GetAllGangs(int? limit, int? offset);   
     Task<List<Dictionary<string,object>>>GetGang(string id);
 }
 
@@ -18,7 +18,7 @@ public class GangService : IGangService
         ?? throw new InvalidOperationException("Missing Default Connection");
     }
 
-    public async Task<List<Gangs>>GetAllGangs()
+    public async Task<List<Gangs>>GetAllGangs(int? limit, int? offset)
     {
         var result = new List<Gangs>();
         using (var connection = new MySqlConnection(connectionString))
@@ -26,9 +26,17 @@ public class GangService : IGangService
         await connection.OpenAsync();
 
         var sql = "Select id, name, members, leader, tag, bank FROM organisations WHERE alive = 1";
-
+        if (limit.HasValue)
+        {
+            sql += " LIMIT @limit";
+            if (offset.HasValue)
+            {
+                sql += " OFFSET @offset";  
+            };
+        };
         using var command = new MySqlCommand(sql, connection);
-
+        command.Parameters.AddWithValue("@limit", limit);
+        command.Parameters.AddWithValue("@offset", offset);
         using var reader = await command.ExecuteReaderAsync();
 
         while (await reader.ReadAsync())

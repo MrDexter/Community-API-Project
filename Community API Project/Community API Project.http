@@ -1,6 +1,6 @@
 @Community_API_Project_HostAddress = http://localhost:5197
 
-GET {{Community_API_Project_HostAddress}}/players
+GET {{Community_API_Project_HostAddress}}/players?limit=1&offset=1
 Accept: application/json
 
 ###

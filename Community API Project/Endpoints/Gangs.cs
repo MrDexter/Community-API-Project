@@ -9,9 +9,9 @@ public static class GangEndpoints
     {
         var group = app.MapGroup("/gangs");
 
-        group.MapGet("/", async (IGangService gangs) =>
+        group.MapGet("/", async (int? limit, int? offset, IGangService gangs) =>
         {
-            var result = await gangs.GetAllGangs();
+            var result = await gangs.GetAllGangs(limit, offset);
             return Results.Ok(result);
         });
 
