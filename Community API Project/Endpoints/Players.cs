@@ -26,10 +26,12 @@ public static class PlayerEndpoints
             return Results.Ok(result);
         });
 
-        group.MapPost("/{id}/updaterank", [Authorize] async (HttpContext ctx, int id, string rank, string newRank, IPlayerService players) =>
+        group.MapPost("/{id}/updaterank", [Authorize] async (HttpContext ctx, int id, string rank, string newRank, IPlayerService players, ISecurityService security) =>
         {
+            var userName = ctx.User.Identity?.Name ?? "Unknown";
             if (!ctx.User.HasClaim("scope", "write"))
             {
+                await security.AuditLog("Access Denied: Rank Update", id, userName, $"{rank} - {newRank}");
                 return Results.Forbid();
             };
             var group = ctx.User.FindFirst("side")?.Value;
@@ -38,29 +40,38 @@ public static class PlayerEndpoints
                 "police" => rank switch
                 {
                     "coplevel" or "tfuLevel" or "ncaLevel" or "npaslevel" or "mpuLevel" or "acadLevel" => rank,
-                    _ => throw new Exception("Invalid Rank Or Permissions")
+                    _ => null
                 },
                 "opfor" => rank switch
                 {
                     "ionlevel" or "deltalevel" or "UmLevel" or "iaflevel" or "irulevel" => rank,
-                    _ => throw new Exception("Invalid Rank Or Permissions")
+                    _ => null
                 },
                 "medic" => rank switch 
                 {
                     "mediclevel" or "hemslevel" or "hartlevel" => rank,
-                    _ => throw new Exception("Invalid Rank Or Permissions")
+                    _ => null
                 },
                 "staff" => rank switch
                 {
                     "adminlevel" or "donorlevel" or "donorexpiry" => rank,
-                    _ => throw new Exception("Invalid Rank Or Permissions")  
+                    _ => null
                 },
                 //Error
-                _ => throw new Exception("Invalid Permissions")
+                _ => null
             }; 
+            if (column is null) {
+                await security.AuditLog("Invalid Rank or Permissions: Rank Update", id, userName, $"{rank} - {newRank}");
+                throw new Exception(column);
+            };
             var result = await players.UpdateRank(id, column, newRank);
             if (result is null)
+            { 
+                
+                await security.AuditLog("Not Found: Rank Update", id, userName, $"{rank} - {newRank}");   
                 return Results.NotFound();
+            };
+            await security.AuditLog("Complete: Rank Update", id, userName, $"{rank} - {newRank}");
             return Results.Ok(result);
         });
         return app;

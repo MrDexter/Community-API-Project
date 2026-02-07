@@ -1,3 +1,4 @@
+# Production
 @Community_API_Project_HostAddress = http://localhost:5197
 
 GET {{Community_API_Project_HostAddress}}/players?limit=1&offset=1
@@ -20,11 +21,10 @@ Accept: application/json
 
 ###
 
-POST {{Community_API_Project_HostAddress}}/players/7/updaterank?rank=coplevel&newrank=6
+POST {{Community_API_Project_HostAddress}}/players/7/updaterank?rank=coplevell&newrank=6
 Content-Type: application/json
 # X-API-Key: PASSWORD123
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYXBpLWNsaWVudCIsInNpZGUiOiJwb2xpY2UiLCJzY29wZSI6IndyaXRlIiwiZXhwIjoxNzY5OTg2Nzc0LCJpc3MiOiJDb21tdW5pdHlBcGkiLCJhdWQiOiJDb21tdW5pdHlBcGlDbGllbnRzIn0.Y7nrOBGbg-rkaXoh2wSPSKVSxRHguyd9KwoYJYxrboQ
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYXBpLWNsaWVudCIsInNpZGUiOiJwb2xpY2UiLCJzY29wZSI6IndyaXRlIiwiZXhwIjoxNzcwNDkzMzM1LCJpc3MiOiJDb21tdW5pdHlBcGkiLCJhdWQiOiJDb21tdW5pdHlBcGlDbGllbnRzIn0.1s0a-_iKwk58faskqsMPSACy1MQirOQEr-jXGKuqTVU
 
 ###
 POST {{Community_API_Project_HostAddress}}/Auth/Token?name=api-client&group=police&perms=write

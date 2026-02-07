@@ -38,6 +38,10 @@ builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IGangService, GangService>();
+builder.Services.AddScoped<ISecurityService, SecurityService>();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+var env = builder.Environment;
 
 var app = builder.Build();
 
